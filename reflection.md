@@ -116,13 +116,15 @@ Flitering tasks would be very important to test
 
 - What part of this project are you most satisfied with?
 
-I im proud part of function where I added the pets and it worked properly for different pets.
+I am proud part of function where I added the pets and it worked properly for different pets.
 
 **b. What you would improve**
 
 - If you had another iteration, what would you improve or redesign?
-
+I would make it much more easier to read and it make it much more nicer. 
+Maybe much better ui.
 
 **c. Key takeaway**
 
 - What is one important thing you learned about designing systems or working with AI on this project?
+  It's a very long progress to actually get ai to do want you want to actually have in the code and you have to ask much multiple times before you get it right. I've ask ai to rewrite code mutliple times on mark done function because the first couple sugggestions weren't what I wanted it to be.

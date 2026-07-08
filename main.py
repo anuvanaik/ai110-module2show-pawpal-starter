@@ -22,6 +22,14 @@ evening_feed = Task(
     frequency="Daily",
 )
 
+# Scheduled at the same time as morning_walk on purpose, to demonstrate conflict detection.
+ear_drops = Task(
+    task_type="Medication",
+    description="Give ear drops",
+    time="7:00 AM",
+    frequency="Daily",
+)
+
 # --- Pets ---
 luna = Pet(
     name="Luna",
@@ -30,7 +38,9 @@ luna = Pet(
     med_needs="Allergy pill with lunch",
     enrichment_needs="1 hour exercise daily",
 )
-luna.tasks = [morning_walk, evening_feed]
+# Tasks added out of chronological order (evening before morning) to
+# demonstrate that the scheduler sorts by time regardless of insertion order.
+luna.tasks = [evening_feed, ear_drops, morning_walk]
 
 mochi = Pet(
     name="Mochi",
@@ -50,20 +60,47 @@ alex = Owner(
 
 # --- Scheduler ---
 scheduler = Scheduler(schedule_name="Alex's Daily Plan")
-scheduler.tasks = luna.tasks + mochi.tasks
+scheduler.create_plan(alex)
+task_to_pet = {id(task): pet for pet in alex.pets for task in pet.tasks}
 
-# --- Print Today's Schedule ---
+# --- Print Today's Schedule (sorted by time, not insertion order) ---
 print("=" * 40)
 print("        TODAY'S SCHEDULE - PawPal+")
 print("=" * 40)
 
-for pet in alex.pets:
-    print(f"\n{pet.name} ({pet.breed})")
-    print("-" * 30)
-    for task in pet.tasks:
-        status = "Done" if task.is_complete else "Pending"
-        print(f"  [{status}] {task.time} — {task.task_type}: {task.description}")
+for task in scheduler.organize_tasks():
+    pet = task_to_pet[id(task)]
+    status = "Done" if task.is_complete else "Pending"
+    print(f"  [{status}] {task.time} — {pet.name}: {task.task_type}: {task.description}")
 
 print("\n" + "=" * 40)
 print(f"Owner: Alex  |  Available: {alex.time_availability}")
 print("=" * 40)
+
+# --- Verify the Scheduler catches the double-booked 7:00 AM slot ---
+print("\nChecking for scheduling conflicts...")
+conflicts = scheduler.find_conflicts(alex)
+if conflicts:
+    for conflict in conflicts:
+        print(
+            f"  [CONFLICT] {conflict['pet']} has two tasks scheduled at {conflict['time']}: "
+            f"{', '.join(conflict['descriptions'])}"
+        )
+else:
+    print("  No conflicts found.")
+
+# --- Demonstrate recurring tasks: completing a "Daily" task stays visible as Done ---
+print("\nCompleting Luna's morning walk (Daily)...")
+Scheduler.mark_task_complete(morning_walk)
+print(f"Luna now has {len(luna.tasks)} task(s):")
+for task in scheduler.sort_by_time(luna.tasks):
+    status = "Done" if task.is_complete else "Pending"
+    print(f"  [{status}] {task.time} — {task.task_type}: {task.description}")
+
+# --- Building the next plan rolls the completed daily task into its next occurrence ---
+print("\nGenerating a new plan...")
+scheduler.create_plan(alex)
+print(f"Luna now has {len(luna.tasks)} task(s):")
+for task in scheduler.sort_by_time(luna.tasks):
+    status = "Done" if task.is_complete else "Pending"
+    print(f"  [{status}] {task.time} — {task.task_type}: {task.description}")

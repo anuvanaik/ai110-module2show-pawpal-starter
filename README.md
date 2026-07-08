@@ -46,6 +46,23 @@ pip install -r requirements.txt
 
 Paste a sample of your app's CLI or Streamlit output here so a reader can see what a generated plan looks like:
 
+========================================
+        TODAY'S SCHEDULE - PawPal+
+========================================
+
+Luna (Golden Retriever)
+------------------------------
+  [Pending] 7:00 AM � Enrichment: Morning walk around the block
+  [Pending] 6:00 PM � Diet: Serve measured dinner portion
+
+Mochi (Shih Tzu)
+------------------------------
+  [Pending] 12:00 PM � Medication: Give allergy pill with food
+
+========================================
+Owner: Alex  |  Available: Mornings and evenings
+========================================
+
 ```
 # e.g.:
 # Daily plan for Biscuit (Golden Retriever):
@@ -76,10 +93,10 @@ Sample test output:
 
 | Feature | Method(s) | Notes |
 |---------|-----------|-------|
-| Task sorting | | e.g., by priority, duration |
-| Filtering | | e.g., skip tasks if time runs out |
-| Conflict handling | | e.g., overlapping time slots |
-| Recurring tasks | | e.g., daily vs. weekly |
+| Task sorting | Scheduler.sort_by_time(tasks=None)|sorts tasks by time|
+| Filtering | Scheduler.filter_tasks(owner, is_complete=None, pet_name=None)|by completion status and/or pet name|
+| Conflict handling |Scheduler.check_conflict(pet, task), Scheduler.find_conflicts(owner), check_conflict()| returns warning message |
+| Recurring tasks | Task.is_recurring() , Task.next_occurrence(), Scheduler.mark_task_complete(task), Scheduler.roll_over_completed_tasks(owner) ||
 
 ## 📸 Demo Walkthrough
 

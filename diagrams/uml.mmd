@@ -1,33 +1,52 @@
 classDiagram
     class Owner {
-        +str timeAvailability
-        +list ownerPreferences
-        +addPet(pet: Pet) void
-        +addTaskToSchedule(task: Task, scheduler: Scheduler) void
+        +str time_availability
+        +list~str~ owner_preferences
+        +list~Pet~ pets
+        +add_pet(pet: Pet) void
+        +get_all_tasks() list
     }
 
     class Pet {
         +str name
         +str breed
-        +str dietNeeds
-        +str medNeeds
-        +str enrichmentNeeds
-        +assignToTask(task: Task) void
+        +str diet_needs
+        +str med_needs
+        +str enrichment_needs
+        +list~Task~ tasks
+        +add_task(task: Task) void
+        +get_tasks() list
     }
 
     class Task {
-        +str taskType
-        +prioritize(pet: Pet, owner: Owner) void
+        +str task_type
+        +str description
+        +str time
+        +str frequency
+        +bool is_complete
+        +prioritize(pet: Pet, owner: Owner) int
+        +mark_complete() void
+        +is_recurring() bool
+        +next_occurrence() Task
     }
 
     class Scheduler {
-        +str scheduleName
-        +createPlan(owner: Owner) void
-        +fitTaskByAvailability(task: Task, owner: Owner) void
-        +remindOwner(owner: Owner) void
+        +str schedule_name
+        +list~Task~ tasks
+        +get_all_tasks(owner: Owner) list
+        +mark_task_complete(task: Task)$ void
+        +roll_over_completed_tasks(owner: Owner) void
+        +sort_by_time(tasks: list) list
+        +organize_tasks() list
+        +create_plan(owner: Owner) void
+        +fit_task_by_availability(task: Task, owner: Owner) bool
+        +check_conflict(pet: Pet, task: Task)$ str
+        +find_conflicts(owner: Owner) list
+        +filter_tasks(owner: Owner, is_complete: bool, pet_name: str) list
+        +remind_owner(owner: Owner) list
     }
 
-    Owner "1" --> "many" Pet : Owner has Pet
-    Owner "1" --> "1" Scheduler : Owner manages Scheduler
-    Scheduler "1" --> "many" Task : Scheduler contains Task
-    Task "many" --> "1" Pet : Task is assigned to Pet
+    Owner "1" o-- "many" Pet : has
+    Pet "1" *-- "many" Task : has
+    Scheduler ..> Owner : reads/updates
+    Scheduler ..> Task : sorts/filters
